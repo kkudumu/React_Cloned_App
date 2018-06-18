@@ -1,24 +1,79 @@
 import React from 'react';
-import {  AppRegistry, FlatList, StyleSheet, Text, View, Dimensions } from 'react-native';
+import {  AppRegistry, FlatList, ScrollView, StyleSheet, Text, View, Dimensions } from 'react-native';
 import { createBottomTabNavigator } from 'react-navigation';
 import {Header, Item, Icon, Input, Button, Title} from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Search from './components/Search';
 import TimelineHeader from './components/TimelineHeader';
 import TimelineTable from './components/TimelineTable'
+import JoMood from './components/JoMood';
+import JoSettings from './components/JoSettings';
+import DashboardHeader from './components/DashboardHeader';
+import WeeklyGoals from './components/WeeklyGoals';
+import DailyMood from './components/DailyMood';
+import DailyMoodGraph from './components/DailyMoodGraph';
+import MoodText from './components/MoodText';
+import EntriesText from './components/EntriesText';
+import ShareSummary from './components/ShareSummary';
+import { VictoryContainer} from 'victory-native';
+import FamousQuote from './components/FamousQuote';
+import { Font, AppLoading } from 'expo';
 
-// import FontAwesome, { Icons } from 'react-native-fontawesome';
+
 
 var { height } = Dimensions.get('window');
-var box_count = 3;
-var box_height = height / box_count;
+var { width } = Dimensions.get('window');
+
 
 export class Dashboard extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { loading: false };
+  }
+
+  async componentWillMount() {
+    await Font.loadAsync({
+      Roboto: require("native-base/Fonts/Roboto.ttf"),
+      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
+    });
+    this.setState({ loading: true });
+  }
+
+
   render() {
+    if (!this.state.loading) {
+      return <Expo.AppLoading />;
+    }
     return (
-      <View style={styles.container}>
-        <Text>Dashboard</Text>
+      
+      <ScrollView>
+      <View style={{width: width, height: height, flex:1}}>
+      
+      <View style={{flexDirection:'column'}}>
+      <DashboardHeader/>
+      <View style={{position:'absolute', top:80, right:0, left:0}} >
+      <WeeklyGoals/>
       </View>
+      <View style={{position:'absolute', top:315}}>
+      <DailyMood/>
+      </View>
+      <View style={{position:'relative', top:345}}>
+      <View style={{position:'relative', top:20}}>
+      <MoodText/>
+      </View>
+      <DailyMoodGraph/>
+      <View style={{position:'relative', top:300}}>
+      <EntriesText/>
+      <FamousQuote/>
+      <ShareSummary/>
+      </View>
+    
+      </View> 
+      
+      </View>
+      </View>
+      </ScrollView>
+      
     );
   }
 }
@@ -48,8 +103,8 @@ export class Timeline extends React.Component {
 export class FromJo extends React.Component {
   render() {
     return (
-      <View style={styles.container}>
-        <Text>From Jo</Text>
+      <View style={{flex:1}}>
+        <JoMood/>
       </View>
     );
   }
@@ -58,8 +113,8 @@ export class FromJo extends React.Component {
 export class Settings extends React.Component {
   render() {
     return (
-      <View style={styles.container}>
-        <Text>Settings</Text>
+      <View style={{flex:1}}>
+        <JoSettings/>
       </View>
     );
   }
@@ -82,7 +137,7 @@ export default createBottomTabNavigator({
 },
 
   FromJo: { screen: FromJo, navigationOptions: {
-    tabBarLabel: 'FromJo',
+    tabBarLabel: 'From Jo',
     tabBarIcon: ({tintColor}) => (
       <Icon name="ios-chatbubbles-outline" color={tintColor} size={40}/>
     )
@@ -96,12 +151,13 @@ export default createBottomTabNavigator({
     } 
   }
 },{//router config
-  initialRouteName: 'Dashboard',
+  initialRouteName: 'Timeline',
   // order:['Settings', 'Dashboard']
 //navigation for complete tab nav
   navigationOptions: {
     tabBarVisible: true
   },
+
   tabBarOptions:{
     activeTintColor:'blue',
     inactiveTintColor:'grey'
